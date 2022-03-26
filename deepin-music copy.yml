@@ -1,0 +1,354 @@
+app-id: org.deepin.deepin-music
+branch: master
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+command: deepin-music
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  # Wayland access
+  - --socket=wayland
+  # Needs to talk to the network: 就是个本地播放器，似乎不用网络
+  - --share=network
+  # Needs to save files locally
+  # 音乐文件可存在于任何地方
+  - --filesystem=host
+  - --metadata=X-DConf=migrate-path=/org/gnome/dictionary/
+  - --device=dri
+  - --own-name=org.mpris.MediaPlayer2.DeepinMusic
+  - --own-name=com.deepin.SingleInstance.deepinmusic
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.freedesktop.DBus.*
+  - --talk-name=org.freedesktop.Flatpak.*
+  - --talk-name=com.deepin.filemanager.filedialog
+  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+modules:
+  - name: test1
+    buildsystem: simple
+    build-commands:
+      - cp -r . /app
+    sources:
+      - type: dir
+        path: ./tmp/files
+
+  # - name: startup-notification
+  #   buildsystem: autotools
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/freedesktop/startup-notification.git
+
+  # - name: dtk-common
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #     - INSTALL_ROOT=/app
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/usr/* /app
+  #     - rm -rf /app/usr/lib
+  #     - cp -r /app/app/* /app
+  #     - rm -rf /app/app
+  #     - sed -i 's#usr/lib/x86_64-linux-gnu#app/lib#' /app/lib/mkspecs/modules/qt_lib_dtkcommon.pri
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/linuxdeepin/dtkcommon.git
+
+  # - name: gsettings-qt
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #     - INSTALL_ROOT=/app
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/usr/lib/x86_64-linux-gnu/* /app/lib
+  #     - rm -rf /app/usr/lib/x86_64-linux-gnu
+  #     - cp -r /app/usr/lib/qml /app/lib
+  #     - rm -rf /app/usr/lib/qml
+  #     - cp -r /app/usr/include/* /app/include
+  #     - rm -rf /app/usr/include
+  #     - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/gsettings-qt.pc
+  #     - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/gsettings-qt.pc
+  #   sources:
+  #     - type: git
+  #       branch: xenial
+  #       url: https://github.com/ubports/gsettings-qt.git
+
+  # - name: gtest
+  #   buildsystem: cmake
+  #   sources:
+  #     - type: git
+  #       tag: release-1.11.0
+  #       url: https://github.com/google/googletest.git
+
+  # - name: dtk-core
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #       - QMAKEPATH=/app/lib
+  #       - INSTALL_ROOT=/app
+  #   config-opts:
+  #     - QMAKE_LIBDIR=/app/lib
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/usr/lib/mkspecs /app/lib
+  #     - rm -rf /app/usr/lib/mkspecs
+  #     - cp -r /app/app/* /app
+  #     - rm -rf /app/app
+  #     - exit 1
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/linuxdeepin/dtkcore.git
+
+  # - name: dtk-gui
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #       - QMAKEPATH=/app/lib
+  #       - INSTALL_ROOT=/app
+  #   config-opts:
+  #     - QMAKE_LIBDIR=/app/lib
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/usr/lib/mkspecs /app/lib
+  #     - rm -rf /app/usr/lib/mkspecs
+  #     - cp -r /app/app/* /app
+  #     - rm -rf /app/app
+  #   sources:
+  #     - type: git
+  #       # tag: 5.5.21
+  #       url: https://github.com/linuxdeepin/dtkgui.git
+  #     - type: patch
+  #       strip-components: 0
+  #       path: ./tools/kernel_dguiapplicationhelper.patch
+
+  # # 耗时长
+  # - name: dtk-widget
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #       - QMAKEPATH=/app/lib
+  #       - INSTALL_ROOT=/app
+  #   config-opts:
+  #     - QMAKE_INCDIR=/app/include/QGSettings
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/usr/lib/mkspecs /app/lib
+  #     - rm -rf /app/usr/lib/mkspecs
+  #     - cp -r /app/app/* /app
+  #     - rm -rf /app/app
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/linuxdeepin/dtkwidget.git
+      
+  # - name: mpris-qt5
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #       - QMAKEPATH=/app/lib
+  #       - INSTALL_ROOT=/app
+  #   # config-opts:
+  #   #   - QMAKE_INCDIR=/app/include/QGSettings
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/app/lib /app
+  #     - rm -rf /app/app
+  #     - cp -r /app/usr/include /app
+  #     - rm -rf /app/usr/include
+  #     - cp -r /app/usr/lib/qml /app/lib
+  #     - rm -rf /app/usr/lib/qml
+  #     - cp -r /app/usr/lib/x86_64-linux-gnu/* /app/lib
+  #     - rm -rf /app/usr/lib/x86_64-linux-gnu
+  #     - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/mpris-qt5.pc
+  #     - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/mpris-qt5.pc
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/sailfishos/qtmpris.git
+
+  # - name: qtdbusextended-qt5
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #       - QMAKEPATH=/app/lib
+  #       - INSTALL_ROOT=/app
+  #   # config-opts:
+  #   #   - QMAKE_INCDIR=/app/include/QGSettings
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/app/lib /app
+  #     - rm -rf /app/app
+  #     - cp -r /app/usr/include /app
+  #     - rm -rf /app/usr/include
+  #     - cp -r /app/usr/lib/x86_64-linux-gnu/* /app/lib
+  #     - rm -rf /app/usr/lib/x86_64-linux-gnu
+  #     - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/dbusextended-qt5.pc
+  #     - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/dbusextended-qt5.pc
+  #   sources:
+  #     - type: git
+  #       url: https://github.com/nemomobile/qtdbusextended.git
+
+  # 太大了，编译不现实
+  - name: vlc-plugin
+    buildsystem: simple
+    post-install:
+      - rm -rf usr/share/{doc,man}
+      - cp -dr usr/* $FLATPAK_DEST/
+      - cp -r /app/lib/x86_64-linux-gnu/* /app/lib
+      - rm -rf /app/lib/x86_64-linux-gnu
+      # - cp -dr lib/* $FLATPAK_DEST/lib
+      - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/vlc-plugin.pc
+      - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/vlc-plugin.pc
+    build-commands:
+      - ar p libvlc-dev_3.0.17.3-1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libvlccore-dev_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libtag1v5-vanilla_1.11.1+dfsg.1-3_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5dbus5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5core5a_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5widgets5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5gui5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5xml5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5sql5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libkf5codecs5_5.78.0-2_amd64.deb data.tar.xz | tar -xJ
+      - ar p libicu67_67.1-7_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5printsupport5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5x11extras5_5.15.2-2_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5network5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libqt5concurrent5_5.15.2+dfsg-9_amd64.deb data.tar.xz | tar -xJ
+      - ar p libdouble-conversion3_3.1.5-6.1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libmd4c0_0.4.7-2_amd64.deb data.tar.xz | tar -xJ
+      - ar p libgssapi-krb5-2_1.18.3-6+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libkrb5-3_1.18.3-6+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libk5crypto3_1.18.3-6+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libkrb5support0_1.18.3-6+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libkeyutils1_1.6.1-2_amd64.deb data.tar.xz | tar -xJ
+    sources:
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/k/keyutils/libkeyutils1_1.6.1-2_amd64.deb
+        sha256: f01060b434d8cad3c58d5811d2082389f11b3db8152657d6c22c1d298953f2a5
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/k/krb5/libkrb5support0_1.18.3-6+deb11u1_amd64.deb
+        sha256: 1f19908dbd37bd2ba9b3b3c9eb6ab8bee9a72f72745e6887f5366bb5fece654b
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/k/krb5/libk5crypto3_1.18.3-6+deb11u1_amd64.deb
+        sha256: 4a010fc69322b6be9e141a76593f46e6588c968ee3b7cf79a3b8b7efda9aeeba
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/k/krb5/libkrb5-3_1.18.3-6+deb11u1_amd64.deb
+        sha256: afb9dced3fcbdbc439a166eaa217dbfd485585842f12ce4587123009618e8bfe
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/k/krb5/libgssapi-krb5-2_1.18.3-6+deb11u1_amd64.deb
+        sha256: 2ab853cbd0494c06fa694906c6eeea4df79720f461c76d080eb21a3e98f44115
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/libvlccore-dev_3.0.16-1_amd64.deb
+        sha256: 3607fd87f40300b5f1229565284278a9df8d6fb0544309c503f8d247bc013802
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/libvlc-dev_3.0.17.3-1_amd64.deb
+        sha256: 7bce5acd84a9686726a0db024992792ad4abbfe1a0a6c7b1b8b91f2c7135e4e0
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/t/taglib/libtag1v5-vanilla_1.11.1+dfsg.1-3_amd64.deb
+        sha256: b53b12cc59f86e4b3ae4bdce2b1620858ce9c450769b7d303df6ef9c5d971570
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5dbus5_5.15.2+dfsg-9_amd64.deb
+        sha256: bfa3d2145e6791b38341cc5def48f58d1e3675f7965d684fbd4314214924aae2
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5core5a_5.15.2+dfsg-9_amd64.deb
+        sha256: 6e72b2e81cbc1f6006e96dc9a03bd9fea34ef7f3351591204bb7786cc8ee82f2
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5widgets5_5.15.2+dfsg-9_amd64.deb
+        sha256: a84a3ba2fae5a2523bf026edfd9724b6ba96fc70753168f5238da17b7ed60066
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5gui5_5.15.2+dfsg-9_amd64.deb
+        sha256: 6dd5967a36daa3070b308c0b5ee0442219487c216d7c949360c6acc8f8ef9721
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5xml5_5.15.2+dfsg-9_amd64.deb
+        sha256: ee3e182e82fe12d4210a0a6b30fb3bde06d8181fdc13e59214018cfb7c146d34
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5sql5_5.15.2+dfsg-9_amd64.deb
+        sha256: 39dbb2fdbbb853cb2025b3c9663be2ebd32cbcb97d45679937dc1d6976d2f3c0
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/k/kcodecs/libkf5codecs5_5.78.0-2_amd64.deb
+        sha256: f71869f153fdd4296fb7d000083c504d5599a08a06d4238769eb563ce539644b
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/i/icu/libicu67_67.1-7_amd64.deb
+        sha256: 2bf5c46254f527865bfd6368e1120908755fa57d83634bd7d316c9b3cfd57303
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5printsupport5_5.15.2+dfsg-9_amd64.deb
+        sha256: 9d2ab2f9e67a45910c1fad0c5d6d113dfd9237050d23a7d3b64423ef2a5e3a09
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtx11extras-opensource-src/libqt5x11extras5_5.15.2-2_amd64.deb
+        sha256: 01df3f2c61233972e6697df1b52d408e5ec90ab17c0f7ae2d57e3fb2e2785868
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5network5_5.15.2+dfsg-9_amd64.deb
+        sha256: f922fb22057ccf305f715b7a82463863c18967c8426b1b0a095026469f97ce21
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/q/qtbase-opensource-src/libqt5concurrent5_5.15.2+dfsg-9_amd64.deb
+        sha256: 9eb9928d18a6ec93f73320cd54c42a58c143e9ee47ad06e4b0aa89db9b63d3e6
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/d/double-conversion/libdouble-conversion3_3.1.5-6.1_amd64.deb
+        sha256: 0a22f1cca233c2347320d56c65312caafb99e379c1aa48af6164a8905ce34672
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/m/md4c/libmd4c0_0.4.7-2_amd64.deb
+        sha256: 505d1105bbdb7696571964a02403580cca6ec5300fc4d800b0ab5408840ec40f
+
+
+  # - name: udisks2-qt5
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #       - QMAKEPATH=/app/lib
+  #       - INSTALL_ROOT=/
+  #   sources:
+  #     - type: git
+  #       tag: 5.0.6
+  #       url: https://github.com/linuxdeepin/udisks2-qt5.git
+
+  # - name: dframeworkdbus
+  #   buildsystem: qmake
+  #   build-options:
+  #     env:
+  #       - QMAKEPATH=/app/lib
+  #       - INSTALL_ROOT=/app
+  #   post-install:
+  #     - mkdir -p /app/lib /app/include
+  #     - cp -r /app/usr/include/* /app/include
+  #     - rm -rf /app/usr/include
+  #     - cp -r /app/usr/lib/* /app/lib
+  #     - rm -rf /app/usr/lib
+  #   sources:
+  #     - type: git
+  #       tag: 5.5.22
+  #       url: https://github.com/linuxdeepin/dde-qt-dbus-factory.git
+
+  # - name: deepin-music
+  #   buildsystem: cmake-ninja
+  #   build-options:
+  #     env:
+  #       - INSTALL_ROOT=/app
+  #     prepend-pkg-config-path: /app/lib/pkgconfig
+  #   config-opts:
+  #     - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  #   sources:
+  # #     - type: git
+  # #       tag: 5.5.22
+  # #       url: https://github.com/linuxdeepin/deepin-music.git
+  #     - type: dir
+  #       path: .
+  #     - type: shell
+  #       commands:
+  #         - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
+  #         - sed -i 's#"-fPIC"#"-L/app/lib -fPIC"#' CMakeLists.txt
+  #         - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
+  #         - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
+
+  - name: desktop
+    buildsystem: simple
+    sources:
+      - type: file
+        path: ./src/music-player/data/deepin-music.desktop
+      - type: file
+        path: ./src/music-player/icons/icons/deepin-music.svg
+    build-commands:
+      - install -D deepin-music.desktop /app/share/applications/org.deepin.deepin-music.desktop
+      - install -D deepin-music.svg /app/share/icons/hicolor/scalable/apps/org.deepin.deepin-music.svg

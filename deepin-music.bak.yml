@@ -1,0 +1,269 @@
+app-id: org.deepin.deepin-music
+branch: master
+runtime: org.kde.Platform
+runtime-version: '5.15-21.08'
+sdk: org.kde.Sdk
+command: deepin-music
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  # Wayland access
+  - --socket=wayland
+  # Needs to talk to the network: 就是个本地播放器，似乎不用网络
+  - --share=network
+  # Needs to save files locally
+  # 音乐文件可存在于任何地方
+  - --filesystem=host
+  - --metadata=X-DConf=migrate-path=/org/gnome/dictionary/
+  - --device=dri
+  - --talk-name=org.mpris.MediaPlayer2.*
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.freedesktop.DBus.*
+  - --talk-name=org.freedesktop.Flatpak.*
+  - --talk-name=com.deepin.filemanager.filedialog
+  - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+modules:
+  # - name: test1
+  #   buildsystem: simple
+  #   build-commands:
+  #     - cp -r . /app
+  #   sources:
+  #     - type: dir
+  #       path: ./tmp/files
+
+  - name: startup-notification
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/freedesktop/startup-notification.git
+
+  - name: dtk-common
+    buildsystem: qmake
+    build-options:
+      env:
+      - INSTALL_ROOT=/app
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/usr/* /app
+      - rm -rf /app/usr/lib
+      - cp -r /app/app/* /app
+      - rm -rf /app/app
+      - sed -i 's#usr/lib/x86_64-linux-gnu#app/lib#' /app/lib/mkspecs/modules/qt_lib_dtkcommon.pri
+    sources:
+      - type: git
+        url: https://github.com/linuxdeepin/dtkcommon.git
+
+  - name: gsettings-qt
+    buildsystem: qmake
+    build-options:
+      env:
+      - INSTALL_ROOT=/app
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/usr/lib/x86_64-linux-gnu/* /app/lib
+      - rm -rf /app/usr/lib/x86_64-linux-gnu
+      - cp -r /app/usr/lib/qml /app/lib
+      - rm -rf /app/usr/lib/qml
+      - cp -r /app/usr/include/* /app/include
+      - rm -rf /app/usr/include
+      - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/gsettings-qt.pc
+      - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/gsettings-qt.pc
+    sources:
+      - type: git
+        branch: xenial
+        url: https://github.com/ubports/gsettings-qt.git
+
+  - name: gtest
+    buildsystem: cmake
+    sources:
+      - type: git
+        tag: release-1.11.0
+        url: https://github.com/google/googletest.git
+
+  - name: dtk-core
+    buildsystem: qmake
+    build-options:
+      env:
+        - QMAKEPATH=/app/lib
+        - INSTALL_ROOT=/app
+    config-opts:
+      - QMAKE_LIBDIR=/app/lib
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/usr/lib/mkspecs /app/lib
+      - rm -rf /app/usr/lib/mkspecs
+      - cp -r /app/app/* /app
+      - rm -rf /app/app
+    sources:
+      - type: git
+        url: https://github.com/linuxdeepin/dtkcore.git
+
+  - name: dtk-gui
+    buildsystem: qmake
+    build-options:
+      env:
+        - QMAKEPATH=/app/lib
+        - INSTALL_ROOT=/app
+    config-opts:
+      - QMAKE_LIBDIR=/app/lib
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/usr/lib/mkspecs /app/lib
+      - rm -rf /app/usr/lib/mkspecs
+      - cp -r /app/app/* /app
+      - rm -rf /app/app
+    sources:
+      - type: git
+        # tag: 5.5.21
+        url: https://github.com/linuxdeepin/dtkgui.git
+      - type: patch
+        strip-components: 0
+        path: ./tools/kernel_dguiapplicationhelper.patch
+
+  # 耗时长
+  - name: dtk-widget
+    buildsystem: qmake
+    build-options:
+      env:
+        - QMAKEPATH=/app/lib
+        - INSTALL_ROOT=/app
+    config-opts:
+      - QMAKE_INCDIR=/app/include/QGSettings
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/usr/lib/mkspecs /app/lib
+      - rm -rf /app/usr/lib/mkspecs
+      - cp -r /app/app/* /app
+      - rm -rf /app/app
+    sources:
+      - type: git
+        url: https://github.com/linuxdeepin/dtkwidget.git
+      
+  - name: mpris-qt5
+    buildsystem: qmake
+    build-options:
+      env:
+        - QMAKEPATH=/app/lib
+        - INSTALL_ROOT=/app
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/app/lib /app
+      - rm -rf /app/app
+      - cp -r /app/usr/include /app
+      - rm -rf /app/usr/include
+      - cp -r /app/usr/lib/qml /app/lib
+      - rm -rf /app/usr/lib/qml
+      - cp -r /app/usr/lib/x86_64-linux-gnu/* /app/lib
+      - rm -rf /app/usr/lib/x86_64-linux-gnu
+      - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/mpris-qt5.pc
+      - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/mpris-qt5.pc
+    sources:
+      - type: git
+        url: https://github.com/sailfishos/qtmpris.git
+
+  - name: qtdbusextended-qt5
+    buildsystem: qmake
+    build-options:
+      env:
+        - QMAKEPATH=/app/lib
+        - INSTALL_ROOT=/app
+    # config-opts:
+    #   - QMAKE_INCDIR=/app/include/QGSettings
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/app/lib /app
+      - rm -rf /app/app
+      - cp -r /app/usr/include /app
+      - rm -rf /app/usr/include
+      - cp -r /app/usr/lib/x86_64-linux-gnu/* /app/lib
+      - rm -rf /app/usr/lib/x86_64-linux-gnu
+      - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/dbusextended-qt5.pc
+      - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/dbusextended-qt5.pc
+    sources:
+      - type: git
+        url: https://github.com/nemomobile/qtdbusextended.git
+
+  # 太大了，编译不现实
+  - name: vlc-plugin
+    buildsystem: simple
+    build-commands:
+      - ar p libvlc-dev_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libvlccore-dev_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
+    post-install:
+      - rm -rf usr/share/{doc,man}
+      - cp -dr usr/* $FLATPAK_DEST/
+      - cp -r /app/lib/x86_64-linux-gnu/* /app/lib
+      - rm -rf /app/lib/x86_64-linux-gnu
+      # - cp -dr lib/* $FLATPAK_DEST/lib
+      - sed -i 's#prefix=/usr#prefix=/app#' /app/lib/pkgconfig/vlc-plugin.pc
+      - sed -i 's#/lib/x86_64-linux-gnu#/lib#' /app/lib/pkgconfig/vlc-plugin.pc
+    sources:
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/libvlccore-dev_3.0.16-1_amd64.deb
+        sha256: 3607fd87f40300b5f1229565284278a9df8d6fb0544309c503f8d247bc013802
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/libvlc-dev_3.0.16-1_amd64.deb
+        sha256: 9c7513b3febd37e24468d41b8ba6d21bb1a6519828104bd6e51e69a8d65e002b
+
+  - name: udisks2-qt5
+    buildsystem: qmake
+    build-options:
+      env:
+        - QMAKEPATH=/app/lib
+        - INSTALL_ROOT=/
+    sources:
+      - type: git
+        tag: 5.0.6
+        url: https://github.com/linuxdeepin/udisks2-qt5.git
+
+  - name: dframeworkdbus
+    buildsystem: qmake
+    build-options:
+      env:
+        - QMAKEPATH=/app/lib
+        - INSTALL_ROOT=/app
+    post-install:
+      - mkdir -p /app/lib /app/include
+      - cp -r /app/usr/include/* /app/include
+      - rm -rf /app/usr/include
+      - cp -r /app/usr/lib/* /app/lib
+      - rm -rf /app/usr/lib
+    sources:
+      - type: git
+        tag: 5.5.22
+        url: https://github.com/linuxdeepin/dde-qt-dbus-factory.git
+
+  - name: deepin-music
+    buildsystem: cmake-ninja
+    build-options:
+      env:
+        - INSTALL_ROOT=/app
+      prepend-pkg-config-path: /app/lib/pkgconfig
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    sources:
+  #     - type: git
+  #       tag: 5.5.22
+  #       url: https://github.com/linuxdeepin/deepin-music.git
+      - type: dir
+        path: .
+      - type: shell
+        commands:
+          - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
+          - sed -i 's#"-fPIC"#"-L/app/lib -fPIC"#' CMakeLists.txt
+          - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
+          - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
+
+  - name: desktop
+    buildsystem: simple
+    sources:
+      - type: file
+        path: ./src/music-player/data/deepin-music.desktop
+      - type: file
+        path: ./src/music-player/icons/icons/deepin-music.svg
+    build-commands:
+      - install -D deepin-music.desktop /app/share/applications/org.deepin.deepin-music.desktop
+      - install -D deepin-music.svg /app/share/icons/hicolor/scalable/apps/org.deepin.deepin-music.svg
