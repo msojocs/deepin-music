@@ -7,12 +7,18 @@ fail() {
     echo -e "\033[41;37m 失败 \033[0m $1"
 }
 
-# 前提：编译完毕
 root_dir=$(cd `dirname $0`/.. && pwd -P)
 build_dir="$root_dir/build/AppDir"
 tmp_dir="$root_dir/build/tmp"
 src_dir="$root_dir/build/src"
 
+###################### 准备 ##########################
+cd $root_dir
+# fix: crash for scan
+sed -i 's#  register_all_function r#  // register_all_function r#' src/libdmusic/metadetector.cpp
+sed -i 's#  register_all();#  // register_all();#' src/libdmusic/metadetector.cpp
+
+##################### 构建 ###########################
 mkdir -p $root_dir/build
 cd $root_dir/build
 cmake .. && make
@@ -36,7 +42,7 @@ cp -r $src_dir/music-player $build_dir/usr/lib
 
 cat > "$build_dir/AppRun" <<- 'EOF'
 #!/bin/bash
-exec $APPDIR/usr/bin/music-player/deepin-music
+exec $APPDIR/usr/bin/music-player/deepin-music -platformtheme deepin -style chameleon
 EOF
 chmod +x "$build_dir/AppRun"
 
