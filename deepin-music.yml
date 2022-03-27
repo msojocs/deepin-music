@@ -225,6 +225,8 @@ modules:
   #         - sed -i 's#"-fPIC"#"-L/app/lib -fPIC"#' CMakeLists.txt
   #         - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
   #         - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
+  #         - sed -i 's#register_all_function #// register_all_function #' src/libdmusic/metadetector.cpp
+  #         - sed -i 's#register_all();#// register_all();#' src/libdmusic/metadetector.cpp
 
   - name: desktop
     buildsystem: simple

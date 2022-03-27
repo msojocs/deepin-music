@@ -86,8 +86,8 @@ typedef int (*codec_receive_frame_function)(AVCodecContext *, AVFrame *);
 
 void MetaDetector::init()
 {
-    // register_all_function register_all = FfmpegDynamicInstance::VlcFunctionInstance()->resolveSymbol("av_register_all");
-    // register_all();
+    register_all_function register_all = FfmpegDynamicInstance::VlcFunctionInstance()->resolveSymbol("av_register_all");
+    register_all();
     localeCodes.insert("zh_CN", "GB18030");
 }
 
