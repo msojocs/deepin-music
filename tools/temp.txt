@@ -1,1 +1,8 @@
 icu69
+
+main
+-> mainframe.initUI(musicCount > 0 ? true : false);
+-> m_footerWidget = new FooterWidget(this);
+-> initUI(parent);
+-> slotFlushSoundIcon();
+-> Player::getInstance()->getMuted()

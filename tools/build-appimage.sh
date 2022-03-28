@@ -43,6 +43,7 @@ cp -r $src_dir/music-player $build_dir/usr/lib
 
 cat > "$build_dir/AppRun" <<- 'EOF'
 #!/bin/bash
+export QT_DEBUG_PLUGINS=1
 export LD_LIBRARY_PATH="$APPDIR/usr/lib:$LD_LIBRARY_PATH"
 exec $APPDIR/usr/bin/music-player/deepin-music -platformtheme deepin -style chameleon
 EOF
@@ -50,12 +51,11 @@ chmod +x "$build_dir/AppRun"
 
 # lib
 cp /usr/lib/x86_64-linux-gnu/libicu*  $build_dir/usr/lib
-# cp /opt/Qt/5.15.2/gcc_64/lib/libicu*  $build_dir/usr/lib
 cp /opt/Qt/5.15.2/gcc_64/lib/libdtk*.so  $build_dir/usr/lib
 cp /usr/lib/libudisk*  $build_dir/usr/lib
 cp /opt/Qt/5.15.2/gcc_64/lib/libmpris*  $build_dir/usr/lib
 cp /usr/lib/x86_64-linux-gnu/libKF5*  $build_dir/usr/lib
-# cp /opt/Qt/5.15.2/gcc_64/lib/libQt5*  $build_dir/usr/lib
+# cp /opt/Qt/5.15.2/gcc_64/lib/libicu*  $build_dir/usr/lib
 # ls /opt/Qt/5.15.2/gcc_64/lib | grep
 # ls /usr/lib/x86_64-linux-gnu | grep
 

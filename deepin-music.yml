@@ -12,29 +12,54 @@ finish-args:
   # Wayland access
   - --socket=wayland
   - --socket=system-bus
+  - --socket=session-bus
   # Needs to talk to the network: 就是个本地播放器，似乎不用网络
   - --share=network
   # Needs to save files locally
   # 音乐文件可存在于任何地方
   - --filesystem=host
-  - --metadata=X-DConf=migrate-path=/org/gnome/dictionary/
+  - --metadata=X-DConf=migrate-path=/org/deepin/deepin-music/
   - --device=dri
-  - --talk-name=org.mpris.MediaPlayer2.*
-  - --talk-name=org.mpris.*
   - --talk-name=com.deepin.*
-  - --system-talk-name=com.deepin.*
-  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=com.canonical.*
+  - --talk-name=com.deepin.speech.*
   - --talk-name=org.freedesktop.DBus.*
+  - --talk-name=org.mpris.MediaPlayer2.*
   - --talk-name=org.freedesktop.Flatpak.*
+  - --talk-name=com.deepin.SingleInstance.*
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.mpris.MediaPlayer2.DeepinMusic
+  # fix: no signal
+  - --own-name=org.kde.*
+  - --own-name=com.deepin.*
+  - --own-name=com.canonical.*
+  - --own-name=com.deepin.speech.*
+  - --own-name=org.freedesktop.*
+  # https://discussion.fedoraproject.org/t/media-controls-mpris-in-firefox-81-flatpak/23522
+  # fix: service
+  - --own-name=org.mpris.MediaPlayer2.*
   - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+# org.freedesktop.Notifications=talk
+# com.deepin.*=talk
+# com.deepin.SingleInstance.*=talk
+# com.deepin.SingleInstance.*=own
+# com.deepin.speech.*=talk
+# com.deepin.speech.*=own
+# org.freedesktop.DBus.*=talk
+# org.freedesktop.DBus.*=own
+# org.mpris.MediaPlayer2.*=own
+# org.mpris.MediaPlayer2.*=talk
+# org.kde.*=own
+# org.kde.*=talk
+
 modules:
-  # - name: test1
-  #   buildsystem: simple
-  #   build-commands:
-  #     - cp -r . /app
-  #   sources:
-  #     - type: dir
-  #       path: ./tmp/files
+  - name: test1
+    buildsystem: simple
+    build-commands:
+      - cp -r . /app
+    sources:
+      - type: dir
+        path: ./tmp/files
 
   # 太大了，编译不现实
   - name: vlc-plugin
@@ -76,8 +101,20 @@ modules:
       - ar p libdtkgui-dev_5.2.2.4-2_amd64.deb data.tar.xz | tar -xJ
       - ar p libdtkcore5_5.2.2.5-3_amd64.deb data.tar.xz | tar -xJ
       - ar p libdtkcore-dev_5.2.2.5-3_amd64.deb data.tar.xz | tar -xJ
+      - ar p vlc-bin_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
+      - ar p vlc-plugin-base_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
+      - ar p vlc-plugin-qt_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
       
     sources:
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/vlc-plugin-qt_3.0.16-1_amd64.deb
+        sha256: da22270c410d313321e07bae0b2d5a3f02d9366aa73627c932216556ef750d90
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/vlc-plugin-base_3.0.16-1_amd64.deb
+        sha256: 9c334663389d82f33240eb61461ebc7d57734d572d2edd13e088b025f9c43512
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/vlc-bin_3.0.16-1_amd64.deb
+        sha256: 81774374aaa936d5feff7f4caaecdf036198fc2a0de19323d72f597ef9d89505
       - type: file
         url: http://ftp.cn.debian.org/debian/pool/main/d/dtkcore/libdtkcore-dev_5.2.2.5-3_amd64.deb
         sha256: 19377d8a93cdf7b9b7a6b422a3c46b80d2d76ce521f3277f3f49ef0de23a1ebf
@@ -155,29 +192,29 @@ modules:
         sha256: 9c7513b3febd37e24468d41b8ba6d21bb1a6519828104bd6e51e69a8d65e002b
 
 
-  - name: deepin-music
-    buildsystem: cmake-ninja
-    build-options:
-      env:
-        - INSTALL_ROOT=/app
-      prepend-pkg-config-path: /app/lib/pkgconfig
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
-    sources:
-  #     - type: git
-  #       tag: 5.5.22
-  #       url: https://github.com/linuxdeepin/deepin-music.git
-      - type: dir
-        path: .
-      - type: shell
-        commands:
-          - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
-          - sed -i 's#"-fPIC"#"-L/app/lib -fPIC"#' CMakeLists.txt
-          - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
-          - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
-          # fix: crash for scan
-          - sed -i 's#register_all_function r#// register_all_function r#' src/libdmusic/metadetector.cpp
-          - sed -i 's#register_all();#// register_all();#' src/libdmusic/metadetector.cpp
+  # - name: deepin-music
+  #   buildsystem: cmake-ninja
+  #   build-options:
+  #     env:
+  #       - INSTALL_ROOT=/app
+  #     prepend-pkg-config-path: /app/lib/pkgconfig
+  #   config-opts:
+  #     - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  #   sources:
+  # #     - type: git
+  # #       tag: 5.5.22
+  # #       url: https://github.com/linuxdeepin/deepin-music.git
+  #     - type: dir
+  #       path: .
+  #     - type: shell
+  #       commands:
+  #         - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
+  #         - sed -i 's#"-fPIC"#"-L/app/lib -g -ggdb -fPIC"#' CMakeLists.txt
+  #         - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
+  #         - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
+  #         # fix: crash for scan ffmpeg >= 4.0
+  #         # - sed -i 's#register_all_function r#// register_all_function r#' src/libdmusic/metadetector.cpp
+  #         # - sed -i 's#register_all();#// register_all();#' src/libdmusic/metadetector.cpp
 
   - name: desktop
     buildsystem: simple
@@ -186,6 +223,8 @@ modules:
         path: ./src/music-player/data/deepin-music.desktop
       - type: file
         path: ./src/music-player/icons/icons/deepin-music.svg
+      - type: file
+        path: ./tools/startup
     build-commands:
       - install -D deepin-music.desktop /app/share/applications/org.deepin.deepin-music.desktop
       - install -D deepin-music.svg /app/share/icons/hicolor/scalable/apps/org.deepin.deepin-music.svg
