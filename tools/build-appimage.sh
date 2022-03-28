@@ -21,11 +21,12 @@ sed -i 's#  register_all();#  // register_all();#' src/libdmusic/metadetector.cp
 ##################### 构建 ###########################
 mkdir -p $root_dir/build
 cd $root_dir/build
+sed -i 's#"-fPIC"#"-L/usr/lib/x86_64-linux-gnu -L/opt/Qt/5.15.2/gcc_64/lib -fPIC -fno-sized-deallocation"#' $root_dir/CmakeLists.txt
 cmake .. && make
 cd $root_dir
 
 mkdir -p $build_dir $tmp_dir
-mkdir -p $build_dir/usr/{bin,lib,share/applications,share/icons}
+mkdir -p $build_dir/usr/{bin,lib/x86_64-linux-gnu,share/applications,share/icons}
 mkdir -p $build_dir/usr/share/icons/hicolor/scalable/apps
 
 # desktop
@@ -42,9 +43,21 @@ cp -r $src_dir/music-player $build_dir/usr/lib
 
 cat > "$build_dir/AppRun" <<- 'EOF'
 #!/bin/bash
+export LD_LIBRARY_PATH="$APPDIR/usr/lib:$LD_LIBRARY_PATH"
 exec $APPDIR/usr/bin/music-player/deepin-music -platformtheme deepin -style chameleon
 EOF
 chmod +x "$build_dir/AppRun"
+
+# lib
+cp /usr/lib/x86_64-linux-gnu/libicu*  $build_dir/usr/lib
+# cp /opt/Qt/5.15.2/gcc_64/lib/libicu*  $build_dir/usr/lib
+cp /opt/Qt/5.15.2/gcc_64/lib/libdtk*.so  $build_dir/usr/lib
+cp /usr/lib/libudisk*  $build_dir/usr/lib
+cp /opt/Qt/5.15.2/gcc_64/lib/libmpris*  $build_dir/usr/lib
+cp /usr/lib/x86_64-linux-gnu/libKF5*  $build_dir/usr/lib
+# cp /opt/Qt/5.15.2/gcc_64/lib/libQt5*  $build_dir/usr/lib
+# ls /opt/Qt/5.15.2/gcc_64/lib | grep
+# ls /usr/lib/x86_64-linux-gnu | grep
 
 notice "下载AppImage构建工具 ACTION_MODE:$ACTION_MODE"
 if [[ $ACTION_MODE == 'true' ]]; then
@@ -63,4 +76,4 @@ notice "MAKE APPIMAGE"
 $tmp_dir/appimagetool-x86_64.AppImage --version
 $tmp_dir/appimagetool-x86_64.AppImage "$build_dir" "$root_dir/build/deepin-music.AppImage"
 chmod +x "$root_dir/build/deepin-music.AppImage"
-"$root_dir/build/deepin-music.AppImage"
+# "$root_dir/build/deepin-music.AppImage"
