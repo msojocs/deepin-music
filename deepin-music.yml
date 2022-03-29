@@ -3,7 +3,7 @@ branch: master
 runtime: org.kde.Platform
 runtime-version: '5.15-21.08'
 sdk: org.kde.Sdk
-command: deepin-music
+command: startup
 finish-args:
   # X11 + XShm access
   - --share=ipc
@@ -39,6 +39,7 @@ finish-args:
   # fix: service
   - --own-name=org.mpris.MediaPlayer2.*
   - --env=DCONF_USER_CONFIG_DIR=.config/dconf
+  - --env=QT_QPA_PLATFORM=xcb
 # org.freedesktop.Notifications=talk
 # com.deepin.*=talk
 # com.deepin.SingleInstance.*=talk
@@ -53,26 +54,25 @@ finish-args:
 # org.kde.*=talk
 
 modules:
-  - name: test1
-    buildsystem: simple
-    build-commands:
-      - cp -r . /app
-    sources:
-      - type: dir
-        path: ./tmp/files
+  # - name: test1
+  #   buildsystem: simple
+  #   build-commands:
+  #     - cp -r . /app
+  #   sources:
+  #     - type: dir
+  #       path: ./tmp/files
 
   # 太大了，编译不现实
   - name: vlc-plugin
     buildsystem: simple
     post-install:
-      # - exit 1
       - rm -rf usr/share/{doc,man}
       - cp -dr usr/* $FLATPAK_DEST/
+      - cp -dr lib/* $FLATPAK_DEST/lib
       - cp -r /app/lib/x86_64-linux-gnu/* /app/lib
       - rm -rf /app/lib/x86_64-linux-gnu
       - cp -r /app/include/x86_64-linux-gnu/* /app/include
       - rm -rf /app/include/x86_64-linux-gnu
-      # - cp -dr lib/* $FLATPAK_DEST/lib
       - cd /app/lib/pkgconfig && sed -i 's#/usr#/app#' *.pc
       - cd /app/lib/pkgconfig && sed -i 's#/x86_64-linux-gnu##' *.pc
 
@@ -104,8 +104,32 @@ modules:
       - ar p vlc-bin_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
       - ar p vlc-plugin-base_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
       - ar p vlc-plugin-qt_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libavcodec-dev_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libavformat-dev_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libavformat58_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p libidn11_1.33-3_amd64.deb data.tar.xz | tar -xJ
+      - ar p libavcodec58_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
+      - ar p dde-qt5integration_5.1.0.5-1_amd64.deb data.tar.xz | tar -xJ
       
     sources:
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/d/dde-qt5integration/dde-qt5integration_5.1.0.5-1_amd64.deb
+        sha256: 0890aec8cc22ebd2dc9203eb301675ebcb78d71367f0e7c5c8044718219682fb
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavcodec58_4.3.3-0+deb11u1_amd64.deb
+        sha256: 083c47e88d9d1ed2e40e67b5c71e6c24d13527ad504506a8e99d07c7ce502b26
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/libi/libidn/libidn11_1.33-3_amd64.deb
+        sha256: 0227af6e1e6d2aee6123f40ff8678e033ddf5165fcd8fa43a4851fd3832db5e2
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavformat58_4.3.3-0+deb11u1_amd64.deb
+        sha256: f23a5d77570bbdb365f0e33900c92733fa469af58862a3e36f9dab76c86815bd
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavformat-dev_4.3.3-0+deb11u1_amd64.deb
+        sha256: 6c44ad5535658d379e32e5556b6d69389ed65d096ecf6ae0a1486c94232b14e5
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavcodec-dev_4.3.3-0+deb11u1_amd64.deb
+        sha256: 53b824799126078fc41c2d764f897bff04d1be6c083d58d88086e645f06995e0
       - type: file
         url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/vlc-plugin-qt_3.0.16-1_amd64.deb
         sha256: da22270c410d313321e07bae0b2d5a3f02d9366aa73627c932216556ef750d90
@@ -191,30 +215,31 @@ modules:
         url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/libvlc-dev_3.0.16-1_amd64.deb
         sha256: 9c7513b3febd37e24468d41b8ba6d21bb1a6519828104bd6e51e69a8d65e002b
 
-
-  # - name: deepin-music
-  #   buildsystem: cmake-ninja
-  #   build-options:
-  #     env:
-  #       - INSTALL_ROOT=/app
-  #     prepend-pkg-config-path: /app/lib/pkgconfig
-  #   config-opts:
-  #     - -DCMAKE_BUILD_TYPE=RelWithDebInfo
-  #   sources:
-  # #     - type: git
-  # #       tag: 5.5.22
-  # #       url: https://github.com/linuxdeepin/deepin-music.git
-  #     - type: dir
-  #       path: .
-  #     - type: shell
-  #       commands:
-  #         - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
-  #         - sed -i 's#"-fPIC"#"-L/app/lib -g -ggdb -fPIC"#' CMakeLists.txt
-  #         - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
-  #         - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
-  #         # fix: crash for scan ffmpeg >= 4.0
-  #         # - sed -i 's#register_all_function r#// register_all_function r#' src/libdmusic/metadetector.cpp
-  #         # - sed -i 's#register_all();#// register_all();#' src/libdmusic/metadetector.cpp
+  - name: deepin-music
+    buildsystem: cmake-ninja
+    build-options:
+      env:
+        - INSTALL_ROOT=/app
+      prepend-pkg-config-path: /app/lib/pkgconfig
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    sources:
+  #     - type: git
+  #       tag: 5.5.22
+  #       url: https://github.com/linuxdeepin/deepin-music.git
+      - type: dir
+        path: .
+      - type: shell
+        commands:
+          - rm -rf build
+          - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
+          - sed -i 's#"-fPIC"#"-L/app/lib -g -ggdb -fPIC"#' CMakeLists.txt
+          - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
+          - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
+          - sed -i 's#dir.setPath(path);#dir.setPath("/app/lib");#' src/libdmusic/ffmpegdynamicinstance.cpp src/music-player/core/vlc/vlcdynamicinstance.cpp
+          # fix: crash for scan
+          - sed -i 's#register_all_function r#// register_all_function r#' src/libdmusic/metadetector.cpp
+          - sed -i 's#register_all();#// register_all();#' src/libdmusic/metadetector.cpp
 
   - name: desktop
     buildsystem: simple
@@ -228,3 +253,4 @@ modules:
     build-commands:
       - install -D deepin-music.desktop /app/share/applications/org.deepin.deepin-music.desktop
       - install -D deepin-music.svg /app/share/icons/hicolor/scalable/apps/org.deepin.deepin-music.svg
+      - install -Dm755 startup /app/bin/startup

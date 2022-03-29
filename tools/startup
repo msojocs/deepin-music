@@ -1,1 +1,4 @@
 #!/bin/bash
+# export LD_LIBRARY_PATH=/run/host/usr/lib
+
+/app/bin/deepin-music

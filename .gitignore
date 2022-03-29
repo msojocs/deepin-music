@@ -13,3 +13,5 @@ dist/
 .vscode
 .flatpak-builder
 tmp
+flatpak-build
+make-dir
