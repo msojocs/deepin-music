@@ -31,36 +31,20 @@ finish-args:
   - --talk-name=org.mpris.MediaPlayer2.DeepinMusic
   # fix: no signal
   - --own-name=org.kde.*
-  - --own-name=com.deepin.*
-  - --own-name=com.canonical.*
-  - --own-name=com.deepin.speech.*
-  - --own-name=org.freedesktop.*
   # https://discussion.fedoraproject.org/t/media-controls-mpris-in-firefox-81-flatpak/23522
   # fix: service
   - --own-name=org.mpris.MediaPlayer2.*
   - --env=DCONF_USER_CONFIG_DIR=.config/dconf
   - --env=QT_QPA_PLATFORM=xcb
-# org.freedesktop.Notifications=talk
-# com.deepin.*=talk
-# com.deepin.SingleInstance.*=talk
-# com.deepin.SingleInstance.*=own
-# com.deepin.speech.*=talk
-# com.deepin.speech.*=own
-# org.freedesktop.DBus.*=talk
-# org.freedesktop.DBus.*=own
-# org.mpris.MediaPlayer2.*=own
-# org.mpris.MediaPlayer2.*=talk
-# org.kde.*=own
-# org.kde.*=talk
 
 modules:
-  # - name: test1
-  #   buildsystem: simple
-  #   build-commands:
-  #     - cp -r . /app
-  #   sources:
-  #     - type: dir
-  #       path: ./tmp/files
+  - name: test1
+    buildsystem: simple
+    build-commands:
+      - cp -r . /app
+    sources:
+      - type: dir
+        path: ./tmp/files
 
   # 太大了，编译不现实
   - name: vlc-plugin
@@ -75,58 +59,36 @@ modules:
       - rm -rf /app/include/x86_64-linux-gnu
       - cd /app/lib/pkgconfig && sed -i 's#/usr#/app#' *.pc
       - cd /app/lib/pkgconfig && sed -i 's#/x86_64-linux-gnu##' *.pc
-
     build-commands:
-      - ar p libvlc5_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libvlc-dev_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libvlccore9_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libvlccore-dev_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libstartup-notification0_0.12-6+b1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libstartup-notification0-dev_0.12-6+b1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libgsettings-qt1_0.2-4_amd64.deb data.tar.xz | tar -xJ
-      - ar p libgsettings-qt-dev_0.2-4_amd64.deb data.tar.xz | tar -xJ
-      - ar p libgtest-dev_1.10.0.20201025-1.1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libmpris-qt5-1_1.0.3-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libmpris-qt5-dev_1.0.3-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdbusextended-qt5-1_0.0.3-4_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdbusextended-qt5-dev_0.0.3-4_amd64.deb data.tar.xz | tar -xJ
-      - ar p libudisks2-qt5-0_5.0.5-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libudisks2-qt5-dev_5.0.5-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdframeworkdbus2_5.2.0.29-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdframeworkdbus-dev_5.2.0.29-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libgmock-dev_1.10.0.20201025-1.1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdtkwidget5_5.2.2.10-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdtkwidget-dev_5.2.2.10-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdtkgui5_5.2.2.4-2_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdtkgui-dev_5.2.2.4-2_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdtkcore5_5.2.2.5-3_amd64.deb data.tar.xz | tar -xJ
-      - ar p libdtkcore-dev_5.2.2.5-3_amd64.deb data.tar.xz | tar -xJ
-      - ar p vlc-bin_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p vlc-plugin-base_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p vlc-plugin-qt_3.0.16-1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libavcodec-dev_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libavformat-dev_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libavformat58_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
-      - ar p libidn11_1.33-3_amd64.deb data.tar.xz | tar -xJ
-      - ar p libavcodec58_4.3.3-0+deb11u1_amd64.deb data.tar.xz | tar -xJ
-      - ar p dde-qt5integration_5.1.0.5-1_amd64.deb data.tar.xz | tar -xJ
-      
+      - for file in *.deb; do ar p $file data.tar.xz | tar -xJ; done;
     sources:
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/libq/libqtxdg/libqt5xdg3_3.6.0-1_amd64.deb
+        sha256: b02e66287eb14bd37a3d4e7909ad4c805068a527b0bba60904201c722a967d20
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/libq/libqtxdg/libqt5xdgiconloader3_3.6.0-1_amd64.deb
+        sha256: 75c01b8564e46b6e74fcef6044125a7357655876987776841fb4c2715d728fd7
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavcodec58_4.3.3-0+deb11u1_amd64.deb
+        sha256: 083c47e88d9d1ed2e40e67b5c71e6c24d13527ad504506a8e99d07c7ce502b26
+      # - type: file
+      #   url: http://ftp.cn.debian.org/debian/pool/main/k/kwayland/kwayland-data_5.78.0-2_all.deb
+      #   sha256: 1eb5c910862eb86d2f309031197a80d770bf62e691d7144e1a5932f2281d7202
+      - type: file
+        url: http://ftp.cn.debian.org/debian/pool/main/d/deepin-qt5dxcb-plugin/qt5dxcb-plugin_5.0.17-1_amd64.deb
+        sha256: af0e512f1257da0e9cc6072f2b4807f6554e383b9acadedc403a1686417303c1
       - type: file
         url: http://ftp.cn.debian.org/debian/pool/main/d/dde-qt5integration/dde-qt5integration_5.1.0.5-1_amd64.deb
         sha256: 0890aec8cc22ebd2dc9203eb301675ebcb78d71367f0e7c5c8044718219682fb
       - type: file
-        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavcodec58_4.3.3-0+deb11u1_amd64.deb
-        sha256: 083c47e88d9d1ed2e40e67b5c71e6c24d13527ad504506a8e99d07c7ce502b26
-      - type: file
         url: http://ftp.cn.debian.org/debian/pool/main/libi/libidn/libidn11_1.33-3_amd64.deb
         sha256: 0227af6e1e6d2aee6123f40ff8678e033ddf5165fcd8fa43a4851fd3832db5e2
-      - type: file
-        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavformat58_4.3.3-0+deb11u1_amd64.deb
-        sha256: f23a5d77570bbdb365f0e33900c92733fa469af58862a3e36f9dab76c86815bd
-      - type: file
-        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavformat-dev_4.3.3-0+deb11u1_amd64.deb
-        sha256: 6c44ad5535658d379e32e5556b6d69389ed65d096ecf6ae0a1486c94232b14e5
+      # - type: file
+      #   url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavformat58_4.3.3-0+deb11u1_amd64.deb
+      #   sha256: f23a5d77570bbdb365f0e33900c92733fa469af58862a3e36f9dab76c86815bd
+      # - type: file
+      #   url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavformat-dev_4.3.3-0+deb11u1_amd64.deb
+      #   sha256: 6c44ad5535658d379e32e5556b6d69389ed65d096ecf6ae0a1486c94232b14e5
       - type: file
         url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavcodec-dev_4.3.3-0+deb11u1_amd64.deb
         sha256: 53b824799126078fc41c2d764f897bff04d1be6c083d58d88086e645f06995e0
@@ -215,31 +177,31 @@ modules:
         url: http://ftp.cn.debian.org/debian/pool/main/v/vlc/libvlc-dev_3.0.16-1_amd64.deb
         sha256: 9c7513b3febd37e24468d41b8ba6d21bb1a6519828104bd6e51e69a8d65e002b
 
-  - name: deepin-music
-    buildsystem: cmake-ninja
-    build-options:
-      env:
-        - INSTALL_ROOT=/app
-      prepend-pkg-config-path: /app/lib/pkgconfig
-    config-opts:
-      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
-    sources:
-  #     - type: git
-  #       tag: 5.5.22
-  #       url: https://github.com/linuxdeepin/deepin-music.git
-      - type: dir
-        path: .
-      - type: shell
-        commands:
-          - rm -rf build
-          - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
-          - sed -i 's#"-fPIC"#"-L/app/lib -g -ggdb -fPIC"#' CMakeLists.txt
-          - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
-          - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
-          - sed -i 's#dir.setPath(path);#dir.setPath("/app/lib");#' src/libdmusic/ffmpegdynamicinstance.cpp src/music-player/core/vlc/vlcdynamicinstance.cpp
-          # fix: crash for scan
-          - sed -i 's#register_all_function r#// register_all_function r#' src/libdmusic/metadetector.cpp
-          - sed -i 's#register_all();#// register_all();#' src/libdmusic/metadetector.cpp
+  # - name: deepin-music
+  #   buildsystem: cmake-ninja
+  #   build-options:
+  #     env:
+  #       - INSTALL_ROOT=/app
+  #     prepend-pkg-config-path: /app/lib/pkgconfig
+  #   config-opts:
+  #     - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  #   sources:
+  # #     - type: git
+  # #       tag: 5.5.22
+  # #       url: https://github.com/linuxdeepin/deepin-music.git
+  #     - type: dir
+  #       path: .
+  #     - type: shell
+  #       commands:
+  #         - rm -rf build
+  #         - sed -i 's#/usr/include#/app/include#' src/music-player/CMakeLists.txt
+  #         - sed -i 's#"-fPIC"#"-L/app/lib -g -ggdb -fPIC"#' CMakeLists.txt
+  #         - sed -i 's#/usr/share/#/app/share/#' src/music-player/CMakeLists.txt
+  #         - sed -i 's#/usr/lib/#/app/lib/#' src/libmusic-plugin/CMakeLists.txt
+  #         - sed -i 's#dir.setPath(path);#path="/app/lib";dir.setPath(path);#' src/music-player/core/vlc/vlcdynamicinstance.cpp
+  #         # fix: crash for scan
+  #         - sed -i 's#register_all_function r#// register_all_function r#' src/libdmusic/metadetector.cpp
+  #         - sed -i 's#register_all();#// register_all();#' src/libdmusic/metadetector.cpp
 
   - name: desktop
     buildsystem: simple

@@ -6,5 +6,5 @@ root_dir=$(cd `dirname $0`/.. && pwd -P)
 
 
 cd $root_dir
-flatpak-builder flatpak-build deepin-music.yml --force-clean --install --user #--skip-if-unchanged
+flatpak-builder build/flatpak deepin-music.yml --keep-build-dirs --force-clean --install --user
 flatpak run org.deepin.deepin-music
