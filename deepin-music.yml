@@ -59,6 +59,7 @@ modules:
       - rm -rf /app/include/x86_64-linux-gnu
       - cd /app/lib/pkgconfig && sed -i 's#/usr#/app#' *.pc
       - cd /app/lib/pkgconfig && sed -i 's#/x86_64-linux-gnu##' *.pc
+      - for file in /usr/lib/x86_64-linux-gnu/libav*; do ln -s $file /app/lib/$(basename $file); done;
     build-commands:
       - for file in *.deb; do ar p $file data.tar.xz | tar -xJ; done;
     sources:
@@ -68,9 +69,9 @@ modules:
       - type: file
         url: http://ftp.cn.debian.org/debian/pool/main/libq/libqtxdg/libqt5xdgiconloader3_3.6.0-1_amd64.deb
         sha256: 75c01b8564e46b6e74fcef6044125a7357655876987776841fb4c2715d728fd7
-      - type: file
-        url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavcodec58_4.3.3-0+deb11u1_amd64.deb
-        sha256: 083c47e88d9d1ed2e40e67b5c71e6c24d13527ad504506a8e99d07c7ce502b26
+      # - type: file
+      #   url: http://ftp.cn.debian.org/debian/pool/main/f/ffmpeg/libavcodec58_4.3.3-0+deb11u1_amd64.deb
+      #   sha256: 083c47e88d9d1ed2e40e67b5c71e6c24d13527ad504506a8e99d07c7ce502b26
       # - type: file
       #   url: http://ftp.cn.debian.org/debian/pool/main/k/kwayland/kwayland-data_5.78.0-2_all.deb
       #   sha256: 1eb5c910862eb86d2f309031197a80d770bf62e691d7144e1a5932f2281d7202
