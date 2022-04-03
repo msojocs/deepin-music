@@ -61,6 +61,7 @@ bool checkOnly();
 
 int main(int argc, char *argv[])
 {
+    qDebug() << "=======DEEPIN MUSIC=====main======";
     if (!QString(qgetenv("XDG_CURRENT_DESKTOP")).toLower().startsWith("deepin")) {
         setenv("XDG_CURRENT_DESKTOP", "Deepin", 1);
     }
@@ -116,6 +117,7 @@ int main(int argc, char *argv[])
 //    VlcDynamicInstance::VlcFunctionInstance();
 //    Player::getInstance();
     //将检查唯一性提前可以先创建好缓存路径避免某种情况下创建数据库失败
+    qDebug() << "==== check singleInstance";
     bool bc = checkOnly();
     if (!OpenFilePaths.isEmpty()) {
         QStringList strList;
@@ -157,12 +159,16 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    qDebug() << "==== set singleInstance";
     DApplicationSettings saveTheme;
     /*---Player instance init---*/
     MainFrame mainframe;
     int musicCount = DataBaseService::getInstance()->allMusicInfosCount();
+    qDebug() << "==== main call initUI";
     mainframe.initUI(musicCount > 0 ? true : false);
+    qDebug() << "main call show";
     mainframe.show();
+    qDebug() << "==== main call autoStartToPlay";
     mainframe.autoStartToPlay();
     createSpeechDbus();
 

@@ -200,6 +200,7 @@ MainFrame::~MainFrame()
 
 void MainFrame::initUI(bool showLoading)
 {
+    qDebug() << "==== mainframe initUI 0";
     this->setMinimumSize(QSize(900, 600));
     this->setFocusPolicy(Qt::ClickFocus);
 
@@ -213,34 +214,43 @@ void MainFrame::initUI(bool showLoading)
         initPadMenu();
     }
 
+    qDebug() << "==== mainframe initUI 1";
     m_musicContentWidget = new MusicContentWidget(this);
     m_musicContentWidget->setVisible(showLoading);
 
+    qDebug() << "==== mainframe initUI 2";
     m_musicStatckedWidget = new MusicStatckedWidget(this);
     m_musicStatckedWidget->addWidget(m_musicContentWidget);
     m_musicStatckedWidget->setCurrentWidget(m_musicContentWidget);
 
+    qDebug() << "==== mainframe initUI 3";
     m_footerWidget = new FooterWidget(this);
+    qDebug() << "==== mainframe initUI 3-1";
     m_footerWidget->setVisible(showLoading);
+    qDebug() << "==== mainframe initUI 3-2";
     connect(m_footerWidget, &FooterWidget::lyricClicked, this, &MainFrame::slotLyricClicked);
 
+    qDebug() << "==== mainframe initUI 4";
     if (!showLoading) {
         m_importWidget = new ImportWidget(this);
     }
     m_musicLyricWidget = new MusicLyricWidget(this);
     m_musicLyricWidget->hide();
 
+    qDebug() << "==== mainframe initUI 5";
     AC_SET_OBJECT_NAME(m_musicLyricWidget, AC_musicLyricWidget);
     AC_SET_ACCESSIBLE_NAME(m_musicLyricWidget, AC_musicLyricWidget);
 
     //    m_pwidget = new QWidget(this);
 
+    qDebug() << "==== mainframe initUI 6";
     connect(DataBaseService::getInstance(), &DataBaseService::signalAllMusicCleared,
             this, &MainFrame::slotAllMusicCleared);
 
     connect(DGuiApplicationHelper::instance(), &DGuiApplicationHelper::themeTypeChanged,
             this, &MainFrame::setThemeType);
 
+    qDebug() << "==== mainframe initUI 7";
     // 歌词控件自动收起时更新歌词按钮
     connect(m_musicLyricWidget, &MusicLyricWidget::signalAutoHidden,
             m_footerWidget, &FooterWidget::slotLyricAutoHidden);
@@ -248,6 +258,7 @@ void MainFrame::initUI(bool showLoading)
     connect(CommonService::getInstance(), &CommonService::signalCdaImportFinished,
             this, &MainFrame::slotCdaImportFinished);
 
+    qDebug() << "==== mainframe initUI 8";
     setThemeType(DGuiApplicationHelper::instance()->themeType());
 }
 

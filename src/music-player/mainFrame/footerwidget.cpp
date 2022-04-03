@@ -73,15 +73,19 @@ DGUI_USE_NAMESPACE
 FooterWidget::FooterWidget(QWidget *parent) :
     DFloatingWidget(parent)
 {
+    qDebug() << "=== FooterWidget 0";
     setFocusPolicy(Qt::ClickFocus);
     setObjectName("FooterWidget");
+    qDebug() << "=== FooterWidget 1";
     this->setBlurBackgroundEnabled(true);
     this->blurBackground()->setRadius(30);
     this->blurBackground()->setBlurEnabled(true);
     this->blurBackground()->setMode(DBlurEffectWidget::GaussianBlur);
     QColor backMaskColor(255, 255, 255, 140);
     this->blurBackground()->setMaskColor(backMaskColor);
+    qDebug() << "=== FooterWidget 2";
     initShortcut();
+    qDebug() << "=== FooterWidget 3";
     initUI(parent);
     slotTheme(DGuiApplicationHelper::instance()->themeType());
     m_limitRepeatClick = new QTimer(this);

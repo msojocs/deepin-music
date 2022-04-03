@@ -91,12 +91,18 @@ VlcInstance::VlcInstance(const QStringList &args,
       _logLevel(Vlc::ErrorLevel)
 {
     Q_UNUSED(args)
+    qDebug() << "=== VlcInstance";
     vlc_new_function vlc_new = (vlc_new_function)VlcDynamicInstance::VlcFunctionInstance()->resolveSymbol("libvlc_new");
+    qDebug() << "=== VlcInstance vlc_new" << vlc_new;
     vlc_set_user_agent_function vlc_set_user_agent = (vlc_set_user_agent_function)VlcDynamicInstance::VlcFunctionInstance()->resolveSymbol("libvlc_set_user_agent");
+    qDebug() << "=== VlcInstance vlc_set_user_agent" << vlc_set_user_agent;
     vlc_set_app_id_function vlc_set_app_id = (vlc_set_app_id_function)VlcDynamicInstance::VlcFunctionInstance()->resolveSymbol("libvlc_set_app_id");
+    qDebug() << "=== VlcInstance vlc_set_app_id" << vlc_set_app_id;
     vlc_log_set_function vlc_log_set = (vlc_log_set_function)VlcDynamicInstance::VlcFunctionInstance()->resolveSymbol("libvlc_log_set");
+    qDebug() << "=== VlcInstance vlc_log_set" << vlc_log_set;
 
     _vlcInstance = vlc_new(0, nullptr);
+    qDebug() << "=== VlcInstance _vlcInstance" << _vlcInstance;
     vlc_set_user_agent(_vlcInstance, Global::getAppName().toStdString().c_str(), "");//name
     vlc_set_app_id(_vlcInstance, "", "", "deepin-music");//icon
 

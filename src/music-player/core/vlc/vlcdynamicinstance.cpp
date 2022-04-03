@@ -32,7 +32,9 @@ const QString libformate = "libavformat.so";
 
 VlcDynamicInstance::VlcDynamicInstance(QObject *parent) : QObject(parent)
 {
+    qDebug() << "=== VlcDynamicInstance 0";
     bool bret = loadVlcLibrary();
+    qDebug() << "=== VlcDynamicInstance 1" << bret;
     Q_ASSERT(bret == true);
 }
 
@@ -89,6 +91,7 @@ QFunctionPointer VlcDynamicInstance::resolveSymbol(const char *symbol, bool bffm
 bool VlcDynamicInstance::loadVlcLibrary()
 {
     QString strvlccore = libPath(libvlccore);
+    qDebug() << "=== load lib: " << strvlccore;
     if (QLibrary::isLibrary(strvlccore)) {
         libcore.setFileName(strvlccore);
         if (!libcore.load())
@@ -98,16 +101,22 @@ bool VlcDynamicInstance::loadVlcLibrary()
     }
 
     QString strlibvlc = libPath(libvlc);
+    qDebug() << "=== load lib: " << strlibvlc;
     if (QLibrary::isLibrary(strlibvlc)) {
+        qDebug() << "=== load0: " << strlibvlc;
         libdvlc.setFileName(strlibvlc);
+        qDebug() << "=== load1: " << strlibvlc;
         if (!libdvlc.load()) {
+            qDebug() << "=== load failed: " << strlibvlc;
             return false;
         }
     } else {
+        qDebug() << "=== not lib: " << strlibvlc;
         return false;
     }
 
     QString strlibcodec = libPath(libcodec);
+    qDebug() << "=== load lib: " << strlibcodec;
     if (QLibrary::isLibrary(strlibcodec)) {
         libavcode.setFileName(strlibcodec);
         if (!libavcode.load()) {
@@ -118,14 +127,17 @@ bool VlcDynamicInstance::loadVlcLibrary()
     }
 
     QString strlibformate = libPath(libformate);
+    qDebug() << "=== load lib: " << strlibformate;
     if (QLibrary::isLibrary(strlibformate)) {
         libdformate.setFileName(strlibformate);
         if (!libdformate.load()) {
+            qDebug() << "=== load fail: " << strlibcodec << " - " << libdformate.errorString();
             return false;
         }
     } else {
         return false;
     }
+    qDebug() << "=== load lib: over";
     return true;
 }
 
