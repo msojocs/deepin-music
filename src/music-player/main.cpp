@@ -161,6 +161,7 @@ int main(int argc, char *argv[])
 
     qDebug() << "==== set singleInstance";
     DApplicationSettings saveTheme;
+    Global::initPlaybackEngineType();
     /*---Player instance init---*/
     MainFrame mainframe;
     int musicCount = DataBaseService::getInstance()->allMusicInfosCount();
